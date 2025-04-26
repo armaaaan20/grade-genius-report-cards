@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
@@ -93,6 +94,32 @@ const ReportCardForm = () => {
     setShowPreview(true);
   };
 
+  const handleSubmitFinal = async () => {
+    try {
+      setIsSubmitting(true);
+      
+      const reportCardData: ReportCardData = {
+        schoolDetails,
+        studentDetails,
+        examDetails,
+        subjects,
+      };
+
+      const response = await submitReportCard(reportCardData);
+      
+      if (response.success) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message || "Something went wrong. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting report card:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (showPreview) {
     return (
       <PreviewSection
@@ -102,7 +129,9 @@ const ReportCardForm = () => {
           examDetails,
           subjects,
         }}
+        onBack={() => setShowPreview(false)}
         onAddSubject={handleAddSubject}
+        onSubmit={handleSubmitFinal}
       />
     );
   }
