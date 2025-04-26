@@ -1,17 +1,14 @@
-
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 interface PreviewSectionProps {
   data: ReportCardData;
-  onBack: () => void;
   onAddSubject: () => void;
-  onSubmit: () => void;
 }
 
-const PreviewSection = ({ data, onBack, onAddSubject, onSubmit }: PreviewSectionProps) => {
+const PreviewSection = ({ data, onAddSubject }: PreviewSectionProps) => {
   const calculateTotal = () => {
     const totalObtained = data.subjects.reduce((sum, subject) => sum + subject.marksObtained, 0);
     const totalMaximum = data.subjects.reduce((sum, subject) => sum + subject.maximumMarks, 0);
@@ -86,16 +83,7 @@ const PreviewSection = ({ data, onBack, onAddSubject, onSubmit }: PreviewSection
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-4 pt-4">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onBack}
-            className="text-report-primary border-report-primary hover:bg-report-secondary"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back to Edit
-          </Button>
-          
+        <div className="flex justify-end pt-4">
           <Button
             type="button"
             variant="outline"
@@ -103,14 +91,6 @@ const PreviewSection = ({ data, onBack, onAddSubject, onSubmit }: PreviewSection
             className="text-report-primary border-report-primary hover:bg-report-secondary"
           >
             <Plus className="h-4 w-4 mr-2" /> Add Subject
-          </Button>
-          
-          <Button
-            type="submit"
-            onClick={onSubmit}
-            className="bg-report-primary hover:bg-report-primary/90 text-white px-6 ml-auto"
-          >
-            Generate & Send Report Card
           </Button>
         </div>
       </CardContent>
