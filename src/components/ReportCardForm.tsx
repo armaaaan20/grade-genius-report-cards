@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
@@ -6,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import SchoolDetailsSection from "./SchoolDetailsSection";
 import StudentDetailsSection from "./StudentDetailsSection";
 import ExamDetailsSection from "./ExamDetailsSection";
+import PreviewSection from "./PreviewSection";
 import { ReportCardData, Subject, SchoolDetails, StudentDetails, ExamDetails } from "@/types/reportCard";
 import { validateReportCardData } from "@/utils/validation";
 import { submitReportCard } from "@/utils/reportCardService";
@@ -13,6 +13,7 @@ import { Send } from "lucide-react";
 
 const ReportCardForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
   
   const [schoolDetails, setSchoolDetails] = useState<SchoolDetails>({
     schoolName: "",
@@ -69,11 +70,10 @@ const ReportCardForm = () => {
   const handleRemoveSubject = (id: string) => {
     setSubjects((prev) => prev.filter((subject) => subject.id !== id));
   };
-  
-  const handleSubmit = async (e: React.FormEvent) => {
+
+  const handlePreview = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Prepare data
     const reportCardData: ReportCardData = {
       schoolDetails,
       studentDetails,
@@ -81,26 +81,33 @@ const ReportCardForm = () => {
       subjects,
     };
     
-    // Validate form
     const validationErrors = validateReportCardData(reportCardData);
     
     if (validationErrors.length > 0) {
-      // Show validation errors
       validationErrors.forEach((error) => {
         toast.error(error.message);
       });
       return;
     }
     
+    setShowPreview(true);
+  };
+
+  const handleSubmitFinal = async () => {
     try {
       setIsSubmitting(true);
       
-      // Submit data
+      const reportCardData: ReportCardData = {
+        schoolDetails,
+        studentDetails,
+        examDetails,
+        subjects,
+      };
+
       const response = await submitReportCard(reportCardData);
       
       if (response.success) {
         toast.success(response.message);
-        // Reset form or redirect
       } else {
         toast.error(response.message || "Something went wrong. Please try again.");
       }
@@ -111,9 +118,25 @@ const ReportCardForm = () => {
       setIsSubmitting(false);
     }
   };
-  
+
+  if (showPreview) {
+    return (
+      <PreviewSection
+        data={{
+          schoolDetails,
+          studentDetails,
+          examDetails,
+          subjects,
+        }}
+        onBack={() => setShowPreview(false)}
+        onAddSubject={handleAddSubject}
+        onSubmit={handleSubmitFinal}
+      />
+    );
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="w-full">
+    <form onSubmit={handlePreview} className="w-full">
       <SchoolDetailsSection
         schoolDetails={schoolDetails}
         onChange={handleSchoolDetailsChange}
@@ -135,20 +158,10 @@ const ReportCardForm = () => {
       
       <div className="flex justify-end mt-6">
         <Button 
-          type="submit" 
-          disabled={isSubmitting}
+          type="submit"
           className="bg-report-primary hover:bg-report-primary/90 text-white px-6"
         >
-          {isSubmitting ? (
-            <>
-              <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-t-transparent border-white"></div>
-              Processing...
-            </>
-          ) : (
-            <>
-              <Send className="h-4 w-4 mr-2" /> Generate & Send Report Card
-            </>
-          )}
+          <Send className="h-4 w-4 mr-2" /> Preview Report Card
         </Button>
       </div>
     </form>
