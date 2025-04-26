@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
@@ -9,11 +8,9 @@ import ExamDetailsSection from "./ExamDetailsSection";
 import PreviewSection from "./PreviewSection";
 import { ReportCardData, Subject, SchoolDetails, StudentDetails, ExamDetails } from "@/types/reportCard";
 import { validateReportCardData } from "@/utils/validation";
-import { submitReportCard } from "@/utils/reportCardService";
 import { Send } from "lucide-react";
 
 const ReportCardForm = () => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   
   const [schoolDetails, setSchoolDetails] = useState<SchoolDetails>({
@@ -25,7 +22,10 @@ const ReportCardForm = () => {
     studentName: "",
     class: "",
     section: "",
-    email: "",
+    attendance: {
+      totalDays: 0,
+      daysPresent: 0,
+    },
   });
   
   const [examDetails, setExamDetails] = useState<ExamDetails>({
@@ -45,8 +45,15 @@ const ReportCardForm = () => {
     setSchoolDetails((prev) => ({ ...prev, [field]: value }));
   };
   
-  const handleStudentDetailsChange = (field: keyof StudentDetails, value: string) => {
-    setStudentDetails((prev) => ({ ...prev, [field]: value }));
+  const handleStudentDetailsChange = (field: keyof StudentDetails | 'attendance.totalDays' | 'attendance.daysPresent', value: string | number) => {
+    setStudentDetails((prev) => {
+      if (field === 'attendance.totalDays') {
+        return { ...prev, attendance: { ...prev.attendance, totalDays: value as number }};
+      } else if (field === 'attendance.daysPresent') {
+        return { ...prev, attendance: { ...prev.attendance, daysPresent: value as number }};
+      }
+      return { ...prev, [field]: value };
+    });
   };
   
   const handleExamDetailsChange = (field: keyof ExamDetails, value: string) => {
@@ -94,32 +101,6 @@ const ReportCardForm = () => {
     setShowPreview(true);
   };
 
-  const handleSubmitFinal = async () => {
-    try {
-      setIsSubmitting(true);
-      
-      const reportCardData: ReportCardData = {
-        schoolDetails,
-        studentDetails,
-        examDetails,
-        subjects,
-      };
-
-      const response = await submitReportCard(reportCardData);
-      
-      if (response.success) {
-        toast.success(response.message);
-      } else {
-        toast.error(response.message || "Something went wrong. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error submitting report card:", error);
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   if (showPreview) {
     return (
       <PreviewSection
@@ -131,7 +112,6 @@ const ReportCardForm = () => {
         }}
         onBack={() => setShowPreview(false)}
         onAddSubject={handleAddSubject}
-        onSubmit={handleSubmitFinal}
       />
     );
   }

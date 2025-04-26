@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface StudentDetailsSectionProps {
   studentDetails: StudentDetails;
-  onChange: (field: keyof StudentDetails, value: string) => void;
+  onChange: (field: keyof StudentDetails | 'attendance.totalDays' | 'attendance.daysPresent', value: string | number) => void;
 }
 
 const StudentDetailsSection = ({ studentDetails, onChange }: StudentDetailsSectionProps) => {
@@ -49,15 +49,31 @@ const StudentDetailsSection = ({ studentDetails, onChange }: StudentDetailsSecti
             </div>
           </div>
           
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email Address*</Label>
-            <Input
-              id="email"
-              type="email"
-              value={studentDetails.email}
-              onChange={(e) => onChange('email', e.target.value)}
-              placeholder="Enter student's email address"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid gap-2">
+              <Label htmlFor="totalDays">Total School Days*</Label>
+              <Input
+                id="totalDays"
+                type="number"
+                min="0"
+                value={studentDetails.attendance.totalDays}
+                onChange={(e) => onChange('attendance.totalDays', parseInt(e.target.value) || 0)}
+                placeholder="Enter total school days"
+              />
+            </div>
+            
+            <div className="grid gap-2">
+              <Label htmlFor="daysPresent">Days Present*</Label>
+              <Input
+                id="daysPresent"
+                type="number"
+                min="0"
+                max={studentDetails.attendance.totalDays}
+                value={studentDetails.attendance.daysPresent}
+                onChange={(e) => onChange('attendance.daysPresent', parseInt(e.target.value) || 0)}
+                placeholder="Enter days present"
+              />
+            </div>
           </div>
         </div>
       </CardContent>

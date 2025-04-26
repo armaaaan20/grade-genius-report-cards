@@ -1,9 +1,9 @@
-
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Send } from "lucide-react";
+import { ArrowLeft, Plus, FilePdf } from "lucide-react";
 import { calculateGrade } from "@/utils/reportCardService";
+import { toast } from "sonner";
 
 interface PreviewSectionProps {
   data: ReportCardData;
@@ -22,6 +22,12 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
   const { totalObtained, totalMaximum } = calculateTotal();
   const percentage = totalMaximum > 0 ? ((totalObtained / totalMaximum) * 100).toFixed(2) : "0";
   const overallGrade = calculateGrade(Number(percentage));
+
+  const handleCreatePDF = () => {
+    // This is a placeholder for PDF creation functionality
+    console.log("Creating PDF...");
+    toast.info("PDF creation feature coming soon!");
+  };
 
   return (
     <div className="space-y-6">
@@ -50,10 +56,6 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                 <span className="font-medium text-gray-700">Section:</span>
                 <span className="col-span-2">{data.studentDetails.section}</span>
               </div>
-              <div className="grid grid-cols-3">
-                <span className="font-medium text-gray-700">Email:</span>
-                <span className="col-span-2">{data.studentDetails.email}</span>
-              </div>
             </div>
             
             <div className="flex justify-end">
@@ -70,7 +72,6 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                   <th className="border border-gray-300 px-4 py-2 text-left">Subject</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Marks Obtained</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Maximum Marks</th>
-                  <th className="border border-gray-300 px-4 py-2 text-center">Percentage</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Grade</th>
                 </tr>
               </thead>
@@ -86,9 +87,6 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                       <td className="border border-gray-300 px-4 py-2">{subject.name}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{subject.marksObtained}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{subject.maximumMarks}</td>
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        {subjectPercentage.toFixed(2)}%
-                      </td>
                       <td className="border border-gray-300 px-4 py-2 text-center font-semibold">
                         {grade}
                       </td>
@@ -99,7 +97,6 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                   <td className="border border-gray-300 px-4 py-2">Total</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalObtained}</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalMaximum}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">{percentage}%</td>
                   <td className="border border-gray-300 px-4 py-2 text-center font-bold">{overallGrade}</td>
                 </tr>
               </tbody>
@@ -118,8 +115,11 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
             </div>
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-800">Attendance</h3>
-              <p className="text-sm">Total School Days: N/A</p>
-              <p className="text-sm">Days Present: N/A</p>
+              <p className="text-sm">Total School Days: {data.studentDetails.attendance.totalDays}</p>
+              <p className="text-sm">Days Present: {data.studentDetails.attendance.daysPresent}</p>
+              <p className="text-sm">Attendance Percentage: {
+                ((data.studentDetails.attendance.daysPresent / data.studentDetails.attendance.totalDays) * 100 || 0).toFixed(1)
+              }%</p>
             </div>
           </div>
           
@@ -159,10 +159,10 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
         
         <Button 
           type="button"
-          onClick={onSubmit}
+          onClick={handleCreatePDF}
           className="bg-report-primary hover:bg-report-primary/90 text-white px-6 ml-auto"
         >
-          <Send className="h-4 w-4 mr-2" /> Submit Report Card
+          <FilePdf className="h-4 w-4 mr-2" /> Create PDF
         </Button>
       </div>
     </div>

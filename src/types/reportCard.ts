@@ -8,7 +8,10 @@ export interface StudentDetails {
   studentName: string;
   class: string;
   section: string;
-  email: string;
+  attendance: {
+    totalDays: number;
+    daysPresent: number;
+  };
 }
 
 export interface ExamDetails {
