@@ -8,6 +8,7 @@ export interface StudentDetails {
   studentName: string;
   class: string;
   section: string;
+  photo?: File;
   attendance: {
     totalDays: number;
     daysPresent: number;

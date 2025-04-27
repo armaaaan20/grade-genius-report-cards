@@ -3,7 +3,7 @@ import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Plus, FileText } from "lucide-react";
-import { calculateGrade } from "@/utils/reportCardService";
+import { calculateGrade, calculateTotalMarks } from "@/utils/reportCardService";
 import { toast } from "sonner";
 
 interface PreviewSectionProps {
@@ -14,14 +14,7 @@ interface PreviewSectionProps {
 }
 
 const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSectionProps) => {
-  const calculateTotal = () => {
-    const totalObtained = data.subjects.reduce((sum, subject) => sum + subject.marksObtained, 0);
-    const totalMaximum = data.subjects.reduce((sum, subject) => sum + subject.maximumMarks, 0);
-    return { totalObtained, totalMaximum };
-  };
-
-  const { totalObtained, totalMaximum } = calculateTotal();
-  const percentage = totalMaximum > 0 ? ((totalObtained / totalMaximum) * 100).toFixed(2) : "0";
+  const { totalObtained, totalMaximum, percentage } = calculateTotalMarks(data);
   const overallGrade = calculateGrade(Number(percentage));
 
   const handleCreatePDF = () => {
@@ -36,12 +29,13 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
       <Card className="mb-6 shadow-md border-report-secondary print:shadow-none">
         <CardContent className="pt-6 px-8">
           <div className="text-center mb-8 border-b pb-4">
-            <h1 className="text-2xl font-bold text-report-primary uppercase tracking-wider mb-1">
+            <h1 className="text-4xl font-bold text-report-primary uppercase tracking-wider mb-3">
               {data.schoolDetails.schoolName}
             </h1>
-            <p className="text-sm text-gray-600 mb-2">{data.schoolDetails.address}</p>
-            <h2 className="text-xl font-semibold text-gray-800 mt-4">REPORT CARD</h2>
-            <p className="text-sm text-gray-600 mt-1">{data.examDetails.examName}</p>
+            <p className="text-sm text-gray-600 mb-3">{data.schoolDetails.address}</p>
+            <h2 className="text-2xl font-semibold text-gray-800 mt-4">
+              {data.examDetails.examName}
+            </h2>
           </div>
           
           <div className="grid grid-cols-2 gap-8 mb-8">
@@ -61,9 +55,17 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
             </div>
             
             <div className="flex justify-end">
-              <div className="border border-gray-200 w-32 h-40 flex items-center justify-center text-gray-400 text-sm">
-                Student Photo
-              </div>
+              {data.studentDetails.photo ? (
+                <img 
+                  src={URL.createObjectURL(data.studentDetails.photo)} 
+                  alt="Student"
+                  className="w-32 h-40 object-cover border border-gray-200"
+                />
+              ) : (
+                <div className="border border-gray-200 w-32 h-40 flex items-center justify-center text-gray-400 text-sm">
+                  Student Photo
+                </div>
+              )}
             </div>
           </div>
           
@@ -99,7 +101,9 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                   <td className="border border-gray-300 px-4 py-2">Total</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalObtained}</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalMaximum}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center font-bold">{overallGrade}</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center font-bold" colSpan={1}>
+                    {overallGrade} ({percentage}%)
+                  </td>
                 </tr>
               </tbody>
             </table>
