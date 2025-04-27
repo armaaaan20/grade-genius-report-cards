@@ -1,10 +1,10 @@
-
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, FileText } from "lucide-react";
+import { ArrowLeft, Plus, FilePdf } from "lucide-react";
 import { calculateGrade, calculateTotalMarks } from "@/utils/reportCardService";
 import { toast } from "sonner";
+import { toPDF } from 'react-to-pdf';
 
 interface PreviewSectionProps {
   data: ReportCardData;
@@ -17,16 +17,21 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
   const { totalObtained, totalMaximum, percentage } = calculateTotalMarks(data);
   const overallGrade = calculateGrade(Number(percentage));
 
-  const handleCreatePDF = () => {
-    // This is a placeholder for PDF creation functionality
-    console.log("Creating PDF...");
-    toast.info("PDF creation feature coming soon!");
-    onSubmit(); // Call the onSubmit prop
+  const handleCreatePDF = async () => {
+    try {
+      await toPDF('report-card', {
+        filename: `${data.studentDetails.studentName}_report_card.pdf`,
+      });
+      toast.success("PDF generated successfully!");
+      onSubmit();
+    } catch (error) {
+      toast.error("Failed to generate PDF. Please try again.");
+    }
   };
 
   return (
     <div className="space-y-6">
-      <Card className="mb-6 shadow-md border-report-secondary print:shadow-none">
+      <Card id="report-card" className="mb-6 shadow-md border-report-secondary print:shadow-none">
         <CardContent className="pt-6 px-8">
           <div className="text-center mb-8 border-b pb-4">
             <h1 className="text-4xl font-bold text-report-primary uppercase tracking-wider mb-3">
@@ -168,7 +173,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
           onClick={handleCreatePDF}
           className="bg-report-primary hover:bg-report-primary/90 text-white px-6 ml-auto"
         >
-          <FileText className="h-4 w-4 mr-2" /> Create PDF
+          <FilePdf className="h-4 w-4 mr-2" /> Create PDF
         </Button>
       </div>
     </div>
