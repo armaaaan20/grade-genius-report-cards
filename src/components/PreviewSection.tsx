@@ -1,10 +1,11 @@
+
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, FilePdf } from "lucide-react";
+import { ArrowLeft, Plus, FileText } from "lucide-react";
 import { calculateGrade, calculateTotalMarks } from "@/utils/reportCardService";
 import { toast } from "sonner";
-import { toPDF } from 'react-to-pdf';
+import { usePDF } from 'react-to-pdf';
 
 interface PreviewSectionProps {
   data: ReportCardData;
@@ -16,12 +17,13 @@ interface PreviewSectionProps {
 const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSectionProps) => {
   const { totalObtained, totalMaximum, percentage } = calculateTotalMarks(data);
   const overallGrade = calculateGrade(Number(percentage));
+  const { toPDF, targetRef } = usePDF({
+    filename: `${data.studentDetails.studentName}_report_card.pdf`,
+  });
 
   const handleCreatePDF = async () => {
     try {
-      await toPDF('report-card', {
-        filename: `${data.studentDetails.studentName}_report_card.pdf`,
-      });
+      await toPDF();
       toast.success("PDF generated successfully!");
       onSubmit();
     } catch (error) {
@@ -31,7 +33,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
 
   return (
     <div className="space-y-6">
-      <Card id="report-card" className="mb-6 shadow-md border-report-secondary print:shadow-none">
+      <Card ref={targetRef} className="mb-6 shadow-md border-report-secondary print:shadow-none">
         <CardContent className="pt-6 px-8">
           <div className="text-center mb-8 border-b pb-4">
             <h1 className="text-4xl font-bold text-report-primary uppercase tracking-wider mb-3">
@@ -173,7 +175,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
           onClick={handleCreatePDF}
           className="bg-report-primary hover:bg-report-primary/90 text-white px-6 ml-auto"
         >
-          <FilePdf className="h-4 w-4 mr-2" /> Create PDF
+          <FileText className="h-4 w-4 mr-2" /> Create PDF
         </Button>
       </div>
     </div>
