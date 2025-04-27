@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
@@ -22,6 +21,7 @@ const ReportCardForm = () => {
   
   const [studentDetails, setStudentDetails] = useState<StudentDetails>({
     studentName: "",
+    rollNumber: "", // Add rollNumber to initial state
     class: "",
     section: "",
     attendance: {

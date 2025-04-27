@@ -1,4 +1,3 @@
-
 import { StudentDetails } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -37,30 +36,13 @@ const StudentDetailsSection = ({ studentDetails, onChange }: StudentDetailsSecti
           </div>
           
           <div className="space-y-2">
-            <Label htmlFor="photo">Student Photo</Label>
-            <div className="flex items-center gap-2">
-              <Input
-                id="photo"
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => document.getElementById('photo')?.click()}
-                className="w-full"
-              >
-                <Image className="h-4 w-4 mr-2" />
-                {studentDetails.photo ? 'Change Photo' : 'Upload Photo'}
-              </Button>
-              {studentDetails.photo && (
-                <div className="text-sm text-green-600">
-                  ✓ Photo selected
-                </div>
-              )}
-            </div>
+            <Label htmlFor="rollNumber">Roll Number</Label>
+            <Input
+              id="rollNumber"
+              value={studentDetails.rollNumber || ''}
+              onChange={(e) => onChange('rollNumber', e.target.value)}
+              placeholder="Enter roll number"
+            />
           </div>
 
           <div className="space-y-2">
@@ -103,6 +85,33 @@ const StudentDetailsSection = ({ studentDetails, onChange }: StudentDetailsSecti
               onChange={(e) => onChange('attendance.daysPresent', parseInt(e.target.value) || 0)}
               placeholder="Enter days present"
             />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="photo">Student Photo</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="photo"
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => document.getElementById('photo')?.click()}
+                className="w-full"
+              >
+                <Image className="h-4 w-4 mr-2" />
+                {studentDetails.photo ? 'Change Photo' : 'Upload Photo'}
+              </Button>
+              {studentDetails.photo && (
+                <div className="text-sm text-green-600">
+                  ✓ Photo selected
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </CardContent>

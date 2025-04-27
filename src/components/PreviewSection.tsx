@@ -1,4 +1,3 @@
-
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +50,12 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                 <span className="font-medium text-gray-700">Name:</span>
                 <span className="col-span-2 font-semibold">{data.studentDetails.studentName}</span>
               </div>
+              {data.studentDetails.rollNumber && (
+                <div className="grid grid-cols-3">
+                  <span className="font-medium text-gray-700">Roll No:</span>
+                  <span className="col-span-2 font-semibold">{data.studentDetails.rollNumber}</span>
+                </div>
+              )}
               <div className="grid grid-cols-3">
                 <span className="font-medium text-gray-700">Class:</span>
                 <span className="col-span-2">{data.studentDetails.class}</span>
