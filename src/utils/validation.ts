@@ -25,12 +25,6 @@ export const validateReportCardData = (data: ReportCardData): ValidationError[] 
   if (!data.studentDetails.section) {
     errors.push({ field: "section", message: "Section is required" });
   }
-  
-  if (!data.studentDetails.email) {
-    errors.push({ field: "email", message: "Email is required" });
-  } else if (!isValidEmail(data.studentDetails.email)) {
-    errors.push({ field: "email", message: "Please enter a valid email address" });
-  }
 
   // Validate Exam Details
   if (!data.examDetails.examName) {

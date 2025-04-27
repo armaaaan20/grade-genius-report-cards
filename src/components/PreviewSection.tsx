@@ -1,7 +1,8 @@
+
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, FilePdf } from "lucide-react";
+import { ArrowLeft, Plus, FileText } from "lucide-react";
 import { calculateGrade } from "@/utils/reportCardService";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
     // This is a placeholder for PDF creation functionality
     console.log("Creating PDF...");
     toast.info("PDF creation feature coming soon!");
+    onSubmit(); // Call the onSubmit prop
   };
 
   return (
@@ -162,7 +164,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
           onClick={handleCreatePDF}
           className="bg-report-primary hover:bg-report-primary/90 text-white px-6 ml-auto"
         >
-          <FilePdf className="h-4 w-4 mr-2" /> Create PDF
+          <FileText className="h-4 w-4 mr-2" /> Create PDF
         </Button>
       </div>
     </div>

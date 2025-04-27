@@ -14,7 +14,7 @@ export const submitReportCard = async (data: ReportCardData): Promise<ApiRespons
     // Mock successful response
     return {
       success: true,
-      message: `Report Card Sent Successfully to ${data.studentDetails.email}!`,
+      message: `Report Card Generated Successfully for ${data.studentDetails.studentName}!`,
     };
     
     /* In a real application with a backend, you would do:

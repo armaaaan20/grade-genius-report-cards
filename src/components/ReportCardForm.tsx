@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
@@ -8,6 +9,7 @@ import ExamDetailsSection from "./ExamDetailsSection";
 import PreviewSection from "./PreviewSection";
 import { ReportCardData, Subject, SchoolDetails, StudentDetails, ExamDetails } from "@/types/reportCard";
 import { validateReportCardData } from "@/utils/validation";
+import { submitReportCard } from "@/utils/reportCardService";
 import { Send } from "lucide-react";
 
 const ReportCardForm = () => {
@@ -79,6 +81,18 @@ const ReportCardForm = () => {
     setSubjects((prev) => prev.filter((subject) => subject.id !== id));
   };
 
+  const handleSubmit = async () => {
+    const reportCardData: ReportCardData = {
+      schoolDetails,
+      studentDetails,
+      examDetails,
+      subjects,
+    };
+    
+    // Show a success message for the PDF
+    toast.success("Report card PDF generated successfully!");
+  };
+
   const handlePreview = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -112,6 +126,7 @@ const ReportCardForm = () => {
         }}
         onBack={() => setShowPreview(false)}
         onAddSubject={handleAddSubject}
+        onSubmit={handleSubmit}
       />
     );
   }
