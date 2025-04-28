@@ -18,12 +18,32 @@ export const validateReportCardData = (data: ReportCardData): ValidationError[] 
     errors.push({ field: "studentName", message: "Student name is required" });
   }
   
+  if (!data.studentDetails.rollNumber) {
+    errors.push({ field: "rollNumber", message: "Roll number is required" });
+  }
+  
   if (!data.studentDetails.class) {
     errors.push({ field: "class", message: "Class is required" });
   }
   
   if (!data.studentDetails.section) {
     errors.push({ field: "section", message: "Section is required" });
+  }
+
+  // Validate Attendance
+  if (data.studentDetails.attendance.totalDays <= 0) {
+    errors.push({ field: "attendance.totalDays", message: "Total days must be greater than 0" });
+  }
+  
+  if (data.studentDetails.attendance.daysPresent < 0) {
+    errors.push({ field: "attendance.daysPresent", message: "Days present cannot be negative" });
+  }
+  
+  if (data.studentDetails.attendance.daysPresent > data.studentDetails.attendance.totalDays) {
+    errors.push({ 
+      field: "attendance.daysPresent", 
+      message: "Days present cannot exceed total days" 
+    });
   }
 
   // Validate Exam Details
@@ -47,6 +67,20 @@ export const validateReportCardData = (data: ReportCardData): ValidationError[] 
     
     if (isNaN(subject.maximumMarks)) {
       errors.push({ field: `subjects[${index}].maximumMarks`, message: "Maximum marks must be a number" });
+    }
+    
+    if (subject.maximumMarks <= 0) {
+      errors.push({
+        field: `subjects[${index}].maximumMarks`,
+        message: "Maximum marks must be greater than 0"
+      });
+    }
+    
+    if (subject.marksObtained < 0) {
+      errors.push({
+        field: `subjects[${index}].marksObtained`,
+        message: "Marks obtained cannot be negative"
+      });
     }
     
     if (subject.marksObtained > subject.maximumMarks) {

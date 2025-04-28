@@ -1,24 +1,34 @@
 
+import React, { useState } from "react";
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, FileText } from "lucide-react";
+import { ArrowLeft, Plus, FileText, Download } from "lucide-react";
 import { calculateGrade, calculateTotalMarks } from "@/utils/reportCardService";
 import { toast } from "sonner";
 import { usePDF } from 'react-to-pdf';
+import { Textarea } from "@/components/ui/textarea";
 
 interface PreviewSectionProps {
   data: ReportCardData;
   onAddSubject: () => void;
   onBack: () => void;
   onSubmit: () => void;
+  darkMode: boolean;
 }
 
-const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSectionProps) => {
+const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: PreviewSectionProps) => {
   const { totalObtained, totalMaximum, percentage } = calculateTotalMarks(data);
   const overallGrade = calculateGrade(Number(percentage));
+  const [teacherComment, setTeacherComment] = useState("");
+  
   const { toPDF, targetRef } = usePDF({
-    filename: `${data.studentDetails.studentName}_report_card.pdf`,
+    filename: `${data.studentDetails.studentName}_marks_card.pdf`,
+    page: { 
+      format: 'a4',
+      orientation: 'portrait',
+      margin: 15
+    }
   });
 
   const handleCreatePDF = async () => {
@@ -28,25 +38,60 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
       onSubmit();
     } catch (error) {
       toast.error("Failed to generate PDF. Please try again.");
+      console.error("PDF generation error:", error);
     }
+  };
+
+  // Determine grade colors based on performance
+  const getGradeColor = (percentage: number) => {
+    if (percentage >= 60) return 'text-green-500';
+    if (percentage < 35) return 'text-red-500';
+    return darkMode ? 'text-white' : 'text-gray-700';
   };
 
   return (
     <div className="space-y-6">
-      <Card ref={targetRef} className="mb-6 shadow-md border-report-secondary print:shadow-none">
-        <CardContent className="pt-6 px-8">
-          <div className="text-center mb-8 border-b pb-4">
-            <h1 className="text-4xl font-bold text-report-primary uppercase tracking-wider mb-3">
-              {data.schoolDetails.schoolName}
-            </h1>
-            <p className="text-sm text-gray-600 mb-3">{data.schoolDetails.address}</p>
-            <h2 className="text-2xl font-semibold text-gray-800 mt-4">
-              {data.examDetails.examName}
-            </h2>
+      <div className={`mb-4 ${darkMode ? 'text-white' : ''}`}>
+        <h2 className="text-xl font-semibold mb-2">Marks Card Preview</h2>
+        <p className="text-sm text-muted-foreground">
+          Review the marks card and download as PDF. Make any necessary changes before generating the final document.
+        </p>
+      </div>
+
+      {/* The actual marks card that will be turned into PDF */}
+      <Card 
+        ref={targetRef} 
+        className={`mb-6 shadow-md border-report-secondary print:shadow-none ${darkMode ? 'bg-white' : 'bg-white'}`}
+      >
+        <CardContent className="pt-6 px-8 text-black">
+          <div className="flex justify-between items-start mb-4">
+            {data.schoolDetails.logo && (
+              <div className="w-20 h-20">
+                <img
+                  src={URL.createObjectURL(data.schoolDetails.logo)}
+                  alt="School Logo"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+            )}
+            <div className="text-center flex-1">
+              <h1 className="text-4xl font-bold text-report-primary uppercase tracking-wider mb-2">
+                {data.schoolDetails.schoolName}
+              </h1>
+              <p className="text-sm text-gray-600 mb-2">{data.schoolDetails.address}</p>
+              <div className="max-w-sm mx-auto">
+                <div className="border-b-2 border-gray-300 my-2"></div>
+                <h2 className="text-2xl font-semibold text-gray-800 mt-2">
+                  {data.examDetails.examName}
+                </h2>
+                <div className="border-b-2 border-gray-300 my-2"></div>
+              </div>
+            </div>
+            <div className="w-20 h-20"></div>
           </div>
           
-          <div className="grid grid-cols-2 gap-8 mb-8">
-            <div className="space-y-3">
+          <div className="grid grid-cols-3 gap-6 mb-6">
+            <div className="col-span-2 space-y-3 border p-4 rounded-md">
               <div className="grid grid-cols-3">
                 <span className="font-medium text-gray-700">Name:</span>
                 <span className="col-span-2 font-semibold">{data.studentDetails.studentName}</span>
@@ -62,6 +107,13 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
               <div className="grid grid-cols-3">
                 <span className="font-medium text-gray-700">Section:</span>
                 <span className="col-span-2">{data.studentDetails.section}</span>
+              </div>
+              <div className="grid grid-cols-3">
+                <span className="font-medium text-gray-700">Attendance:</span>
+                <span className="col-span-2">
+                  {data.studentDetails.attendance.daysPresent} / {data.studentDetails.attendance.totalDays} days 
+                  ({((data.studentDetails.attendance.daysPresent / data.studentDetails.attendance.totalDays) * 100 || 0).toFixed(1)}%)
+                </span>
               </div>
             </div>
             
@@ -87,6 +139,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                   <th className="border border-gray-300 px-4 py-2 text-left">Subject</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Marks Obtained</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Maximum Marks</th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">Percentage</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Grade</th>
                 </tr>
               </thead>
@@ -102,7 +155,10 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                       <td className="border border-gray-300 px-4 py-2">{subject.name}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{subject.marksObtained}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{subject.maximumMarks}</td>
-                      <td className="border border-gray-300 px-4 py-2 text-center font-semibold">
+                      <td className="border border-gray-300 px-4 py-2 text-center">
+                        {subjectPercentage.toFixed(1)}%
+                      </td>
+                      <td className={`border border-gray-300 px-4 py-2 text-center font-semibold ${getGradeColor(subjectPercentage)}`}>
                         {grade}
                       </td>
                     </tr>
@@ -112,8 +168,11 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
                   <td className="border border-gray-300 px-4 py-2">Total</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalObtained}</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalMaximum}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center font-bold" colSpan={1}>
-                    {overallGrade} ({percentage}%)
+                  <td className="border border-gray-300 px-4 py-2 text-center">{percentage}%</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center font-bold">
+                    <span className={getGradeColor(Number(percentage))}>
+                      {overallGrade}
+                    </span>
                   </td>
                 </tr>
               </tbody>
@@ -123,20 +182,14 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="space-y-2">
               <h3 className="font-semibold text-gray-800">Performance Summary</h3>
-              <p className="text-sm">
-                {overallGrade === 'A+' || overallGrade === 'A' ? 'Outstanding performance! Keep up the excellent work!' : 
-                 overallGrade === 'B+' || overallGrade === 'B' ? 'Good performance! Continue working hard to improve.' :
-                 overallGrade === 'C+' || overallGrade === 'C' ? 'Satisfactory performance. More effort needed in some subjects.' :
-                 'Needs significant improvement. Regular study and practice recommended.'}
+              <p className="text-sm text-gray-600">
+                {teacherComment || (
+                  overallGrade === 'A+' || overallGrade === 'A' ? 'Outstanding performance! Keep up the excellent work!' : 
+                  overallGrade === 'B+' || overallGrade === 'B' ? 'Good performance! Continue working hard to improve.' :
+                  overallGrade === 'C+' || overallGrade === 'C' ? 'Satisfactory performance. More effort needed in some subjects.' :
+                  'Needs significant improvement. Regular study and practice recommended.'
+                )}
               </p>
-            </div>
-            <div className="space-y-2">
-              <h3 className="font-semibold text-gray-800">Attendance</h3>
-              <p className="text-sm">Total School Days: {data.studentDetails.attendance.totalDays}</p>
-              <p className="text-sm">Days Present: {data.studentDetails.attendance.daysPresent}</p>
-              <p className="text-sm">Attendance Percentage: {
-                ((data.studentDetails.attendance.daysPresent / data.studentDetails.attendance.totalDays) * 100 || 0).toFixed(1)
-              }%</p>
             </div>
           </div>
           
@@ -155,12 +208,33 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
         </CardContent>
       </Card>
       
+      {/* Teacher's comment section - only visible in the preview, not in the PDF */}
+      <Card className={`mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
+        <CardHeader className={darkMode ? 'text-white' : ''}>
+          <CardTitle>Teacher's Comments</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Textarea 
+            placeholder="Add teacher's comments here..." 
+            value={teacherComment}
+            onChange={(e) => setTeacherComment(e.target.value)}
+            className={`min-h-[100px] transition-all ${
+              darkMode ? 'bg-gray-700 border-gray-600 text-white placeholder:text-gray-400' : ''
+            }`}
+          />
+        </CardContent>
+      </Card>
+      
       <div className="flex flex-wrap gap-4">
         <Button
           type="button"
           variant="outline"
           onClick={onBack}
-          className="text-report-primary border-report-primary hover:bg-report-secondary"
+          className={`${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-white' 
+              : 'text-report-primary border-report-primary hover:bg-report-secondary'
+          }`}
         >
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Edit
         </Button>
@@ -169,7 +243,11 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
           type="button"
           variant="outline"
           onClick={onAddSubject}
-          className="text-report-primary border-report-primary hover:bg-report-secondary"
+          className={`${
+            darkMode 
+              ? 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-white' 
+              : 'text-report-primary border-report-primary hover:bg-report-secondary'
+          }`}
         >
           <Plus className="h-4 w-4 mr-2" /> Add Subject
         </Button>
@@ -179,7 +257,7 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit }: PreviewSection
           onClick={handleCreatePDF}
           className="bg-report-primary hover:bg-report-primary/90 text-white px-6 ml-auto"
         >
-          <FileText className="h-4 w-4 mr-2" /> Create PDF
+          <Download className="h-4 w-4 mr-2" /> Download PDF
         </Button>
       </div>
     </div>
