@@ -24,7 +24,7 @@ const SubjectRow = ({ subject, onChange, onRemove, isRemovable, darkMode }: Subj
     }
   };
 
-  // Calculate percentage and grade for this subject
+  // Calculate grade for this subject
   const percentage = subject.maximumMarks > 0 
     ? (subject.marksObtained / subject.maximumMarks) * 100 
     : 0;
@@ -42,7 +42,7 @@ const SubjectRow = ({ subject, onChange, onRemove, isRemovable, darkMode }: Subj
     <div className={`grid grid-cols-12 gap-3 items-center mb-3 p-2 rounded transition-all ${
       darkMode ? 'hover:bg-gray-600' : 'hover:bg-gray-50'
     }`}>
-      <div className="col-span-5">
+      <div className="col-span-6">
         <Input
           value={subject.name}
           onChange={(e) => handleChange('name', e.target.value)}
@@ -77,12 +77,10 @@ const SubjectRow = ({ subject, onChange, onRemove, isRemovable, darkMode }: Subj
           }`}
         />
       </div>
-      <div className="col-span-3 flex items-center justify-end">
-        {subject.name && subject.marksObtained > 0 && (
-          <div className={`mr-3 font-semibold ${getGradeColor()}`}>
-            {grade} ({percentage.toFixed(1)}%)
-          </div>
-        )}
+      <div className="col-span-2 flex items-center justify-end">
+        <span className={`mr-3 font-semibold ${getGradeColor()}`}>
+          {grade}
+        </span>
         {isRemovable && (
           <Button 
             type="button" 
@@ -102,3 +100,4 @@ const SubjectRow = ({ subject, onChange, onRemove, isRemovable, darkMode }: Subj
 };
 
 export default SubjectRow;
+

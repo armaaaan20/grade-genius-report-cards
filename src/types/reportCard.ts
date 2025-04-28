@@ -1,4 +1,3 @@
-
 export interface StudentDetails {
   studentName: string;
   rollNumber: string;
@@ -26,6 +25,7 @@ export interface Subject {
 
 export interface ExamDetails {
   examName: string;
+  teacherComment?: string;
 }
 
 export interface ReportCardData {
