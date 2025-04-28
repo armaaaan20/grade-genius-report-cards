@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -139,26 +138,23 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
                   <th className="border border-gray-300 px-4 py-2 text-left">Subject</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Marks Obtained</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Maximum Marks</th>
-                  <th className="border border-gray-300 px-4 py-2 text-center">Percentage</th>
+                  <th className="border border-gray-300 px-4 py-2 text-center">Minimum Marks</th>
                   <th className="border border-gray-300 px-4 py-2 text-center">Grade</th>
                 </tr>
               </thead>
               <tbody>
                 {data.subjects.map((subject) => {
-                  const subjectPercentage = subject.maximumMarks > 0
-                    ? ((subject.marksObtained / subject.maximumMarks) * 100)
-                    : 0;
-                  const grade = calculateGrade(subjectPercentage);
+                  const minMarks = Math.ceil(subject.maximumMarks * 0.33);
+                  const grade = calculateGrade((subject.marksObtained / subject.maximumMarks) * 100);
+                  const gradeColor = getGradeColor((subject.marksObtained / subject.maximumMarks) * 100);
                   
                   return (
                     <tr key={subject.id} className="border-b">
                       <td className="border border-gray-300 px-4 py-2">{subject.name}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{subject.marksObtained}</td>
                       <td className="border border-gray-300 px-4 py-2 text-center">{subject.maximumMarks}</td>
-                      <td className="border border-gray-300 px-4 py-2 text-center">
-                        {subjectPercentage.toFixed(1)}%
-                      </td>
-                      <td className={`border border-gray-300 px-4 py-2 text-center font-semibold ${getGradeColor(subjectPercentage)}`}>
+                      <td className="border border-gray-300 px-4 py-2 text-center">{minMarks}</td>
+                      <td className={`border border-gray-300 px-4 py-2 text-center font-semibold ${gradeColor}`}>
                         {grade}
                       </td>
                     </tr>
@@ -168,7 +164,9 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
                   <td className="border border-gray-300 px-4 py-2">Total</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalObtained}</td>
                   <td className="border border-gray-300 px-4 py-2 text-center">{totalMaximum}</td>
-                  <td className="border border-gray-300 px-4 py-2 text-center">{percentage}%</td>
+                  <td className="border border-gray-300 px-4 py-2 text-center">
+                    {Math.ceil(totalMaximum * 0.33)}
+                  </td>
                   <td className="border border-gray-300 px-4 py-2 text-center font-bold">
                     <span className={getGradeColor(Number(percentage))}>
                       {overallGrade}
