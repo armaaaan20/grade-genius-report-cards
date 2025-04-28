@@ -1,7 +1,7 @@
 
 export interface StudentDetails {
   studentName: string;
-  rollNumber?: string; // Add optional roll number
+  rollNumber: string;
   class: string;
   section: string;
   photo?: File;
@@ -9,4 +9,38 @@ export interface StudentDetails {
     totalDays: number;
     daysPresent: number;
   };
+}
+
+export interface SchoolDetails {
+  schoolName: string;
+  address: string;
+  logo?: File;
+}
+
+export interface Subject {
+  id: string;
+  name: string;
+  marksObtained: number;
+  maximumMarks: number;
+}
+
+export interface ExamDetails {
+  examName: string;
+}
+
+export interface ReportCardData {
+  schoolDetails: SchoolDetails;
+  studentDetails: StudentDetails;
+  examDetails: ExamDetails;
+  subjects: Subject[];
+}
+
+export interface ApiResponse {
+  success: boolean;
+  message: string;
+}
+
+export interface ValidationError {
+  field: string;
+  message: string;
 }

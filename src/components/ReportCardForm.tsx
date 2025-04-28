@@ -21,7 +21,7 @@ const ReportCardForm = () => {
   
   const [studentDetails, setStudentDetails] = useState<StudentDetails>({
     studentName: "",
-    rollNumber: "", // Add rollNumber to initial state
+    rollNumber: "", 
     class: "",
     section: "",
     attendance: {
@@ -47,7 +47,7 @@ const ReportCardForm = () => {
     setSchoolDetails((prev) => ({ ...prev, [field]: value }));
   };
   
-  const handleStudentDetailsChange = (field: keyof StudentDetails | 'attendance.totalDays' | 'attendance.daysPresent', value: string | number) => {
+  const handleStudentDetailsChange = (field: keyof StudentDetails | 'attendance.totalDays' | 'attendance.daysPresent', value: string | number | File) => {
     setStudentDetails((prev) => {
       if (field === 'attendance.totalDays') {
         return { ...prev, attendance: { ...prev.attendance, totalDays: value as number }};
