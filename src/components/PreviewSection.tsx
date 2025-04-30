@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { ReportCardData } from "@/types/reportCard";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Plus, Download, ChevronRight, ChevronLeft } from "lucide-react";
+import { ArrowLeft, Plus, Download } from "lucide-react";
 import { calculateGrade, calculateTotalMarks } from "@/utils/reportCardService";
 import { toast } from "sonner";
 import { usePDF } from 'react-to-pdf';
@@ -26,8 +26,6 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
   const { totalObtained, totalMaximum, percentage } = calculateTotalMarks(data);
   const overallGrade = calculateGrade(Number(percentage));
   const [teacherComment, setTeacherComment] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const totalPages = 2;
   
   const { toPDF, targetRef } = usePDF({
     filename: `${data.studentDetails.studentName}_marks_card.pdf`,
@@ -56,18 +54,6 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
     return darkMode ? 'text-white' : 'text-gray-700';
   };
 
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
-  const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
   return (
     <div className="space-y-6">
       <div className={`mb-4 ${darkMode ? 'text-white' : ''}`}>
@@ -82,77 +68,50 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
         className={`mb-6 shadow-md border-report-secondary print:shadow-none ${darkMode ? 'bg-white' : 'bg-white'}`}
       >
         <CardContent className="pt-6 px-8 text-black">
-          {currentPage === 1 && (
-            <>
-              <SchoolHeader schoolDetails={data.schoolDetails} />
-              
-              <div className="max-w-sm mx-auto">
-                <div className="border-b-2 border-gray-300 my-2"></div>
-                <h2 className="text-2xl font-semibold text-gray-800 mt-2">
-                  {data.examDetails.examName}
-                </h2>
-                <div className="border-b-2 border-gray-300 my-2"></div>
-              </div>
-              
-              <StudentDetails studentDetails={data.studentDetails} />
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-gray-800">Performance Summary</h3>
-                  <p className="text-sm text-gray-600">
-                    {teacherComment || (
-                      overallGrade === 'A+' || overallGrade === 'A' ? 'Outstanding performance! Keep up the excellent work!' : 
-                      overallGrade === 'B+' || overallGrade === 'B' ? 'Good performance! Continue working hard to improve.' :
-                      overallGrade === 'C+' || overallGrade === 'C' ? 'Satisfactory performance. More effort needed in some subjects.' :
-                      'Needs significant improvement. Regular study and practice recommended.'
-                    )}
-                  </p>
-                </div>
-              </div>
-              
-              <SignatureSection />
-            </>
-          )}
+          {/* School Header */}
+          <SchoolHeader schoolDetails={data.schoolDetails} />
           
-          {currentPage === 2 && (
-            <>
-              <div className="mb-4">
-                <h3 className="text-xl font-semibold text-center mb-4">Academic Performance</h3>
-                <MarksTable
-                  subjects={data.subjects}
-                  totalObtained={totalObtained}
-                  totalMaximum={totalMaximum}
-                  percentage={percentage}
-                  overallGrade={overallGrade}
-                  getGradeColor={getGradeColor}
-                />
-              </div>
-            </>
-          )}
+          <div className="max-w-sm mx-auto">
+            <div className="border-b-2 border-gray-300 my-2"></div>
+            <h2 className="text-2xl font-semibold text-gray-800 mt-2">
+              {data.examDetails.examName}
+            </h2>
+            <div className="border-b-2 border-gray-300 my-2"></div>
+          </div>
+          
+          {/* Student Details */}
+          <StudentDetails studentDetails={data.studentDetails} />
+          
+          {/* Marks Table */}
+          <div className="mb-4">
+            <h3 className="text-xl font-semibold text-center mb-4">Academic Performance</h3>
+            <MarksTable
+              subjects={data.subjects}
+              totalObtained={totalObtained}
+              totalMaximum={totalMaximum}
+              percentage={percentage}
+              overallGrade={overallGrade}
+              getGradeColor={getGradeColor}
+            />
+          </div>
+          
+          {/* Teacher Comments */}
+          <div className="mt-6 mb-4">
+            <h4 className="font-semibold text-gray-800 mb-2">Teacher's Comments</h4>
+            <p className="text-sm text-gray-600 border p-3 min-h-16 rounded">
+              {teacherComment || (
+                overallGrade === 'A+' || overallGrade === 'A' ? 'Outstanding performance! Keep up the excellent work!' : 
+                overallGrade === 'B+' || overallGrade === 'B' ? 'Good performance! Continue working hard to improve.' :
+                overallGrade === 'C+' || overallGrade === 'C' ? 'Satisfactory performance. More effort needed in some subjects.' :
+                'Needs significant improvement. Regular study and practice recommended.'
+              )}
+            </p>
+          </div>
+          
+          {/* Signature Section */}
+          <SignatureSection />
         </CardContent>
       </Card>
-      
-      <div className="flex items-center justify-between mb-4">
-        <Button
-          variant="outline"
-          onClick={handlePrevPage}
-          disabled={currentPage === 1}
-          className={`${darkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-white' : ''} ${currentPage === 1 ? 'opacity-50' : ''}`}
-        >
-          <ChevronLeft className="mr-2 h-4 w-4" /> Previous
-        </Button>
-        <span className={darkMode ? 'text-white' : ''}>
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          variant="outline"
-          onClick={handleNextPage}
-          disabled={currentPage === totalPages}
-          className={`${darkMode ? 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-white' : ''} ${currentPage === totalPages ? 'opacity-50' : ''}`}
-        >
-          Next <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      </div>
       
       <Card className={`mb-6 ${darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`}>
         <CardHeader className={darkMode ? 'text-white' : ''}>
