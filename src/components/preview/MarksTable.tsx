@@ -29,9 +29,9 @@ const MarksTable = ({
         <thead>
           <tr className="bg-report-secondary">
             <th className="border border-gray-300 px-4 py-2 text-left">Subject</th>
-            <th className="border border-gray-300 px-2 py-2 text-center">Marks Obtained</th>
             <th className="border border-gray-300 px-2 py-2 text-center">Maximum Marks</th>
             <th className="border border-gray-300 px-2 py-2 text-center">Minimum Marks</th>
+            <th className="border border-gray-300 px-2 py-2 text-center">Marks Obtained</th>
             <th className="border border-gray-300 px-2 py-2 text-center">Grade</th>
           </tr>
         </thead>
@@ -44,9 +44,9 @@ const MarksTable = ({
             return (
               <tr key={subject.id} className="border-b">
                 <td className="border border-gray-300 px-4 py-2">{subject.name}</td>
-                <td className="border border-gray-300 px-2 py-2 text-center">{subject.marksObtained}</td>
                 <td className="border border-gray-300 px-2 py-2 text-center">{subject.maximumMarks}</td>
                 <td className="border border-gray-300 px-2 py-2 text-center">{minMarks}</td>
+                <td className="border border-gray-300 px-2 py-2 text-center">{subject.marksObtained}</td>
                 <td className={`border border-gray-300 px-2 py-2 text-center font-semibold ${gradeColor}`}>
                   {grade}
                 </td>
@@ -55,14 +55,24 @@ const MarksTable = ({
           })}
           <tr className="bg-gray-100 font-medium">
             <td className="border border-gray-300 px-4 py-2">Total</td>
-            <td className="border border-gray-300 px-2 py-2 text-center">{totalObtained}</td>
             <td className="border border-gray-300 px-2 py-2 text-center">{totalMaximum}</td>
             <td className="border border-gray-300 px-2 py-2 text-center">
               {Math.ceil(totalMaximum * 0.33)}
             </td>
+            <td className="border border-gray-300 px-2 py-2 text-center">{totalObtained}</td>
             <td className="border border-gray-300 px-2 py-2 text-center font-bold">
               <span className={getGradeColor(Number(percentage))}>
                 {overallGrade}
+              </span>
+            </td>
+          </tr>
+          <tr className="bg-gray-200 font-medium">
+            <td colSpan={4} className="border border-gray-300 px-4 py-2 text-right">
+              Overall Percentage:
+            </td>
+            <td className="border border-gray-300 px-2 py-2 text-center font-bold">
+              <span className={getGradeColor(Number(percentage))}>
+                {percentage}%
               </span>
             </td>
           </tr>
