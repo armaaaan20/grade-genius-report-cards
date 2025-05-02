@@ -72,10 +72,12 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
           <SchoolHeader schoolDetails={data.schoolDetails} />
           
           <div className="max-w-sm mx-auto">
-            <div className="border-b-2 border-gray-300 my-2"></div>
-            <h2 className="text-2xl font-semibold text-gray-800 mt-2">
+            <div className="border-b-2 border-gray-300 my-4"></div>
+            <div className="flex justify-center transform -translate-y-3">
+            <h2 className="text-2xl font-semibold text-gray-800 mt-4">
               {data.examDetails.examName}
             </h2>
+            </div>
             <div className="border-b-2 border-gray-300 my-2"></div>
           </div>
           
