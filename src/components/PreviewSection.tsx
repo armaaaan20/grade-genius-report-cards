@@ -31,7 +31,8 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
 
   const handleCreatePDF = async () => {
     try {
-      await toPDF(targetRef, { filename: `${data.studentDetails.studentName}_marks_card.pdf` });
+      // Fix: Call toPDF with just the target reference - it's already configured with options
+      await toPDF(targetRef);
       toast.success("PDF generated successfully!");
       onSubmit();
     } catch (error) {
