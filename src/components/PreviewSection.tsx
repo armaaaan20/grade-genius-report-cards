@@ -31,8 +31,9 @@ const PreviewSection = ({ data, onAddSubject, onBack, onSubmit, darkMode }: Prev
 
   const handleCreatePDF = async () => {
     try {
-      // Fix: Call toPDF with just the target reference - it's already configured with options
-      await toPDF(targetRef);
+      // Fix: The toPDF function should be called without arguments since the target
+      // is already configured in the usePDF hook via the ref options
+      await toPDF();
       toast.success("PDF generated successfully!");
       onSubmit();
     } catch (error) {
