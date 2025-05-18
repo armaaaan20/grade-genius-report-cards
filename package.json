@@ -1,7 +1,6 @@
 {
   "name": "vite_react_shadcn_ts",
-  "hompage":"https://armaaaan20.github.io/grade-genius-report-cards/
-"
+  "hompage":"https://armaaaan20.github.io/grade-genius-report-cards/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
